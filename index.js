@@ -37,7 +37,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/emails", (req, res) => {
-  connection.query("SELECT * FROM emails", (err, rows) => {
+  connection.query("SELECT * FROM user_info", (err, rows) => {
     if (err) {
       console.error("Error al obtener los elementos: ", err);
       res.status(500).json({ error: "Error al obtener los elementos" });
@@ -49,7 +49,8 @@ app.get("/emails", (req, res) => {
 
 app.post("/emails", (req, res) => {
   const nuevoElemento = req.body;
-  connection.query("INSERT INTO emails SET ?", nuevoElemento, (err, result) => {
+
+  connection.query("INSERT INTO user_info SET ?", nuevoElemento, (err, result) => {
     if (err) {
       res.status(500).json({ error: "Error al crear el elemento " + err });
     } else {
