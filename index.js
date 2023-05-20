@@ -11,12 +11,23 @@ const app = express();
 app.use(express.json());
 
 // Configuración de la conexión a la base de datos MySQL
-const connection = mysql.createConnection({
+const pool = mysql.createPool({
+  connectionLimit: 10,
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
 });
+
+// Obtener una conexión del grupo de conexiones
+function getConnection(callback) {
+  pool.getConnection((err, connection) => {
+    if (err) {
+      return callback(err);
+    }
+    callback(null, connection);
+  });
+}
 
 // Conexión a la base de datos MySQL
 connection.connect((err) => {
@@ -37,12 +48,21 @@ app.get("/", (req, res) => {
 });
 
 app.get("/emails", (req, res) => {
-  connection.query("SELECT * FROM user_info", (err, rows) => {
+  getConnection((err, connection) => {
     if (err) {
-      console.error("Error al obtener los elementos: ", err);
-      res.status(500).json({ error: "Error al obtener los elementos" });
+      console.error('Error al obtener una conexión: ', err);
+      res.status(500).json({ error: 'Error al obtener una conexión' });
     } else {
-      res.json(rows);
+      connection.query('SELECT * FROM user_info', (err, rows) => {
+        connection.release(); // Liberar la conexión
+
+        if (err) {
+          console.error('Error al obtener los elementos: ', err);
+          res.status(500).json({ error: 'Error al obtener los elementos' });
+        } else {
+          res.json(rows);
+        }
+      });
     }
   });
 });
@@ -50,11 +70,21 @@ app.get("/emails", (req, res) => {
 app.post("/emails", (req, res) => {
   const nuevoElemento = req.body;
 
-  connection.query("INSERT INTO user_info SET ?", nuevoElemento, (err, result) => {
+  getConnection((err, connection) => {
     if (err) {
-      res.status(500).json({ error: "Error al crear el elemento " + err });
+      console.error('Error al obtener una conexión: ', err);
+      res.status(500).json({ error: 'Error al obtener una conexión' });
     } else {
-      res.json({ id: result.insertId });
+      connection.query('INSERT INTO user_info SET ?', nuevoElemento, (err, result) => {
+        connection.release(); // Liberar la conexión
+
+        if (err) {
+          console.error('Error al crear el elemento: ', err);
+          res.status(500).json({ error: 'Error al crear el elemento' });
+        } else {
+          res.json({ id: result.insertId });
+        }
+      });
     }
   });
 });
