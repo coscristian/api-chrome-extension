@@ -57,3 +57,5 @@ app.post("/emails", (req, res) => {
     }
   });
 });
+
+module.exports = app;
