@@ -51,7 +51,7 @@ app.post("/emails", (req, res) => {
   const nuevoElemento = req.body;
   connection.query("INSERT INTO emails SET ?", nuevoElemento, (err, result) => {
     if (err) {
-      res.status(500).json({ error: "Error al crear el elemento" });
+      res.status(500).json({ error: "Error al crear el elemento " + err });
     } else {
       res.json({ id: result.insertId });
     }
