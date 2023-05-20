@@ -1,7 +1,10 @@
 # Api Chrome Extension
 
 This repository stores the API connection to MySQL Database.
-The MySQL Database can be found [here]()
+
+The MySQL Database is deployed on CleverCLoud
+
+This API has been deployed using **Vercel**, you can access to it [here](https://api-chrome-extension-git-main-coscristian.vercel.app/emails).
 
 ## LogIn GET
 Email log in for users
