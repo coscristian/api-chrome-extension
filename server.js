@@ -32,6 +32,10 @@ app.listen(port, () => {
   console.log("Servidor iniciado en el puerto " + port);
 });
 
+app.get("/", (req, res) => {
+    res.send("Hola mundo");
+});
+
 app.get("/emails", (req, res) => {
   connection.query("SELECT * FROM emails", (err, rows) => {
     if (err) {
